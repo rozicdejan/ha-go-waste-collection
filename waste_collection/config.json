@@ -1,6 +1,6 @@
 {
   "name": "Waste Collection",
-  "version": "1.13",
+  "version": "1.14",
   "slug": "waste_collection",
   "description": "A Home Assistant add-on for waste collection notifications. This add-on fetches waste collection dates from a service and automatically updates Home Assistant with the relevant data.",
   "url": "https://github.com/rozicdejan/ha-go-waste-collection",
