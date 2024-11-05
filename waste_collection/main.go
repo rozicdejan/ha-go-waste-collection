@@ -23,15 +23,24 @@ type WasteData struct {
 }
 
 func main() {
-	// Get Supervisor token and API URL from environment variables
-	haToken := os.Getenv("SUPERVISOR_TOKEN")
-	haURL := os.Getenv("SUPERVISOR_API") + "/states/sensor.waste_collection" // Adding the endpoint to update the sensor state
 
-	if haToken == "" || haURL == "" {
-		log.Fatalf("SUPERVISOR_TOKEN or SUPERVISOR_API is missing. Ensure the add-on is configured correctly.")
+	fmt.Println("Environment Variables:")
+	for _, e := range os.Environ() {
+		fmt.Println(e)
 	}
 
-	// Define the Simbio URL
+	// Retrieve the Supervisor API URL and token from the environment variables
+	haURL := os.Getenv("SUPERVISOR_API") + "/states/sensor.waste_collection"
+	haToken := os.Getenv("SUPERVISOR_TOKEN")
+
+	// Check if the necessary environment variables are set
+	if haToken == "" || haURL == "/states/sensor.waste_collection" {
+		log.Fatalf("SUPERVISOR_TOKEN or SUPERVISOR_API is missing or empty. Ensure the add-on is configured correctly.")
+	}
+
+	log.Println("Starting waste collection data fetch and push to Home Assistant...")
+
+	// Define the URL for the waste collection service
 	urlStr := "https://www.simbio.si/sl/moj-dan-odvoza-odpadkov"
 
 	// Create form data for the POST request to Simbio
