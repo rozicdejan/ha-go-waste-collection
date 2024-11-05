@@ -1,9 +1,8 @@
 {
   "name": "Waste Collection",
-  "version": "1.14",
+  "version": "1.20",
   "slug": "waste_collection",
-  "description": "A Home Assistant add-on for waste collection notifications. This add-on fetches waste collection dates from a service and automatically updates Home Assistant with the relevant data.",
-  "url": "https://github.com/rozicdejan/ha-go-waste-collection",
+  "description": "A Home Assistant add-on for waste collection notifications",
   "startup": "application",
   "boot": "auto",
   "host_network": true,
@@ -16,22 +15,11 @@
     "i386"
   ],
   "options": {
-    "address": "ZAČRET 69"
+    "address": "ZAČRET 69",
+    "homeassistant_url": "http://supervisor" 
   },
   "schema": {
-    "address": "str"
-  },
-  "panel_icon": "mdi:trash-can",
-  "panel_title": "Waste Collection Notifications",
-  "services": [
-    "notify"
-  ],
-  "ingress": false,
-  "ingress_port": 8099,
-  "image": "homeassistant/{arch}-addon-waste-collection",
-  "homeassistant_api": true,
-  "long_description": "A Home Assistant add-on for waste collection notifications. Fetches waste collection schedules based on the provided address and integrates with the Home Assistant ecosystem to display upcoming collection dates. This add-on runs in the background and sends regular updates.",
-  "documentation": "https://github.com/rozicdejan/ha-go-waste-collection",
-  "changelog": "https://github.com/rozicdejan/ha-go-waste-collection/releases",
-  "support_url": "https://github.com/rozicdejan/ha-go-waste-collection/issues"
+    "address": "str",
+    "homeassistant_url": "str"
+  }
 }
