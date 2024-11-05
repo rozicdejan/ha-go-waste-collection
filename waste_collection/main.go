@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 // Struct to hold the response data
@@ -21,12 +22,8 @@ type WasteData struct {
 	NextBIO string `json:"next_bio"`
 }
 
-// Home Assistant REST API URL and Authorization Token
-const haURL = "http://homeassistant.netbird.cloud:8123/api/states/sensor.waste_collection"                                                                                                                // Replace with your Home Assistant URL
-const haToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3YTUxMjNlNWU5ODA0NmFmOWQxYTg3OTRlNzc3MGUxZiIsImlhdCI6MTczMDgwMTIxNywiZXhwIjoyMDQ2MTYxMjE3fQ.Bd4dUug0l4cWvLXwrT0AtAj1IxnLSjcC2wRNmu6CyLM" // Replace with your actual token
-
 func main() {
-	// Define the URL
+	// Define the URL for waste collection data
 	urlStr := "https://www.simbio.si/sl/moj-dan-odvoza-odpadkov"
 
 	// Create form data
@@ -83,6 +80,14 @@ func main() {
 
 // Function to send data to Home Assistant
 func sendToHomeAssistant(data WasteData) error {
+	// Fetch Home Assistant URL and Token from environment variables
+	haURL := os.Getenv("HOMEASSISTANT_URL")
+	haToken := os.Getenv("SUPERVISOR_TOKEN")
+
+	if haURL == "" || haToken == "" {
+		return fmt.Errorf("missing Home Assistant URL or token")
+	}
+
 	payload := map[string]interface{}{
 		"state": "updated",
 		"attributes": map[string]string{
@@ -100,7 +105,7 @@ func sendToHomeAssistant(data WasteData) error {
 		return fmt.Errorf("error marshaling JSON: %v", err)
 	}
 
-	req, err := http.NewRequest("POST", haURL, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", haURL+"/api/states/sensor.waste_collection", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
 	}
