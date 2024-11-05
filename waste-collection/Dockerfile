@@ -1,20 +1,14 @@
-# Use a minimal Go image to run the Go application
+# Start from a base image with Go
 FROM golang:1.18-alpine
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the Go script into the container
-COPY main.go .
+# Copy the Go source code
+COPY waste-collection.go .
 
-# Install dependencies and build the Go script
-RUN go mod init waste-collection && \
-    go mod tidy && \
-    go build -o waste-collection main.go
+# Compile the Go app
+RUN go build -o waste-collection waste-collection.go
 
-# Add a run script (see below)
-COPY run.sh /run.sh
-RUN chmod +x /run.sh
-
-# Run the script when the container starts
-CMD ["/run.sh"]
+# Execute the Go application
+CMD ["/app/waste-collection"]
