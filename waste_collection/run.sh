@@ -1,11 +1,8 @@
-FROM golang:1.18-alpine
+#!/usr/bin/env bash
+set -e
 
-WORKDIR /app
+# Load configuration from options.json
+ADDRESS=$(jq --raw-output '.address' /data/options.json)
 
-COPY go.mod ./
-COPY main.go ./
-COPY run.sh ./
-
-RUN go build -o waste-collection main.go
-
-CMD ["./run.sh"]
+# Run the Go application with the address argument
+/app/waste-collection --address "$ADDRESS"
