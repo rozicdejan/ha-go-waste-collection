@@ -24,7 +24,7 @@ Edit the add-on configuration with your address query. For example:
 ```yaml
 Change Configurtation : Addon > Configuration  sub window > Options > Change address
 ```
-![ha-wast-collection-config](https://github.com/rozicdejan/ha-go-waste-collection/blob/main/pictures/ha-waste-collection-schedule-entities.png?raw=true)
+![ha-wast-collection-config](https://github.com/rozicdejan/ha-go-waste-collection/blob/main/pictures/ha-waste-collection-configuration.png?raw=true)
 
 ## Displaying in Home Assistant Dashboard
 You can display the waste collection schedule using two types of visual elements in your dashboard:
@@ -52,7 +52,7 @@ entities:
 
 
 ```
-[ha-wast-collection-enteties](https://github.com/rozicdejan/ha-go-waste-collection/blob/main/pictures/ha-waste-collection-schedule-entities.png?raw=true)
+[ha-wast-collection-](https://github.com/rozicdejan/ha-go-waste-collection/blob/main/pictures/ha-waste-collection-schedule-entities.png?raw=true)
 
 
 ### 2. Picture-Elements Card (Visual Display with Icons)
