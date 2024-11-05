@@ -22,23 +22,20 @@ type WasteData struct {
 	NextBIO string `json:"next_bio"`
 }
 
+// Home Assistant Supervisor API URL and Authorization Token
+const haURL = "http://supervisor/core/api/states/sensor.waste_collection" // Supervisor API URL
+
 func main() {
-	// Get Home Assistant URL and Supervisor Token from environment variables
-	haURL := os.Getenv("HOMEASSISTANT_URL")
+	// Get the Supervisor token from environment variables
 	haToken := os.Getenv("SUPERVISOR_TOKEN")
-
-	// Validate that both the URL and Token are available
-	if haURL == "" {
-		haURL = "http://supervisor" // Default to supervisor URL for local add-on access
-	}
 	if haToken == "" {
-		log.Fatalf("Error: missing SUPERVISOR_TOKEN for Home Assistant authentication.")
+		log.Fatalf("SUPERVISOR_TOKEN is missing. Ensure the add-on is configured correctly.")
 	}
 
-	// Define the URL for waste collection data
+	// Define the Simbio URL
 	urlStr := "https://www.simbio.si/sl/moj-dan-odvoza-odpadkov"
 
-	// Create form data
+	// Create form data for the POST request to Simbio
 	data := url.Values{}
 	data.Set("action", "simbioOdvozOdpadkov")
 	data.Set("query", "začret 69") // Replace with your desired query
@@ -49,7 +46,7 @@ func main() {
 		log.Fatalf("Error creating request: %v", err)
 	}
 
-	// Set headers to match the original request
+	// Set headers for Simbio request
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
@@ -59,31 +56,31 @@ func main() {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Error sending request: %v", err)
+		log.Fatalf("Error sending request to Simbio: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Check if the response status is OK
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Non-OK HTTP status: %s", resp.Status)
+		log.Fatalf("Non-OK HTTP status from Simbio: %s", resp.Status)
 	}
 
 	// Read the response body
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("Error reading response: %v", err)
+		log.Fatalf("Error reading response from Simbio: %v", err)
 	}
 
-	// Parse the JSON response
+	// Parse the JSON response from Simbio
 	var wasteData []WasteData
 	err = json.Unmarshal(body, &wasteData)
 	if err != nil {
-		log.Fatalf("Error parsing JSON: %v", err)
+		log.Fatalf("Error parsing JSON from Simbio: %v", err)
 	}
 
-	// Send data to Home Assistant
+	// Send each piece of data to Home Assistant
 	for _, data := range wasteData {
-		err = sendToHomeAssistant(data, haURL, haToken)
+		err = sendToHomeAssistant(data, haToken)
 		if err != nil {
 			log.Printf("Error sending data to Home Assistant: %v", err)
 		}
@@ -91,7 +88,7 @@ func main() {
 }
 
 // Function to send data to Home Assistant
-func sendToHomeAssistant(data WasteData, haURL, haToken string) error {
+func sendToHomeAssistant(data WasteData, haToken string) error {
 	payload := map[string]interface{}{
 		"state": "updated",
 		"attributes": map[string]string{
@@ -104,31 +101,36 @@ func sendToHomeAssistant(data WasteData, haURL, haToken string) error {
 		},
 	}
 
+	// Marshal the payload into JSON
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		return fmt.Errorf("error marshaling JSON: %v", err)
 	}
 
-	req, err := http.NewRequest("POST", haURL+"/api/states/sensor.waste_collection", bytes.NewBuffer(jsonData))
+	// Create a POST request to the Home Assistant API
+	req, err := http.NewRequest("POST", haURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
 	}
 
-	// Set the Authorization header
+	// Set the Authorization header with the Supervisor token
 	req.Header.Set("Authorization", "Bearer "+haToken)
 	req.Header.Set("Content-Type", "application/json")
 
+	// Execute the request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request to Home Assistant: %v", err)
 	}
 	defer resp.Body.Close()
 
+	// Check if the response status is OK
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
 		return fmt.Errorf("error response from Home Assistant: %s - %s", resp.Status, string(bodyBytes))
 	}
 
+	log.Println("Data successfully sent to Home Assistant!")
 	return nil
 }
