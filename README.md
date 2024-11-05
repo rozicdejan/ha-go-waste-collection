@@ -52,8 +52,10 @@ entities:
 
 
 ```
+[ha-wast-collection-enteties](https://github.com/rozicdejan/ha-go-waste-collection/blob/main/pictures/ha-waste-collection-schedule-entities.png?raw=true)
 
-## Picture-Elements Card (Visual Display with Icons)
+
+### 2. Picture-Elements Card (Visual Display with Icons)
 For a more visually engaging setup, you can use a picture-elements card. This configuration includes custom icons for each type of waste and dynamically displays the next pickup date beneath each icon.
 
 Add the following to your Picture-Elements card configuration in your dashboard:
