@@ -39,6 +39,7 @@ func main() {
 	haURL := os.Getenv("SUPERVISOR_API")
 	if haURL == "" {
 		haURL = "http://supervisor/core/api"
+		fmt.Println("Set haURL to" + haURL)
 	}
 	haURL = haURL + "/states/sensor.waste_collection"
 
