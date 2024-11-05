@@ -1,6 +1,6 @@
 {
   "name": "Waste Collection",
-  "version": "1.5",
+  "version": "1.0",
   "slug": "waste_collection",
   "description": "A Home Assistant add-on for waste collection notifications",
   "startup": "application",
@@ -15,9 +15,11 @@
     "i386"
   ],
   "options": {
-    "address": "ZAČRET 69"
+    "address": "ZAČRET 69",
+    "homeassistant_url": "http://supervisor" 
   },
   "schema": {
-    "address": "str"
+    "address": "str",
+    "homeassistant_url": "str"
   }
 }

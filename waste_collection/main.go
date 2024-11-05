@@ -23,6 +23,18 @@ type WasteData struct {
 }
 
 func main() {
+	// Get Home Assistant URL and Supervisor Token from environment variables
+	haURL := os.Getenv("HOMEASSISTANT_URL")
+	haToken := os.Getenv("SUPERVISOR_TOKEN")
+
+	// Validate that both the URL and Token are available
+	if haURL == "" {
+		haURL = "http://supervisor" // Default to supervisor URL for local add-on access
+	}
+	if haToken == "" {
+		log.Fatalf("Error: missing SUPERVISOR_TOKEN for Home Assistant authentication.")
+	}
+
 	// Define the URL for waste collection data
 	urlStr := "https://www.simbio.si/sl/moj-dan-odvoza-odpadkov"
 
@@ -71,7 +83,7 @@ func main() {
 
 	// Send data to Home Assistant
 	for _, data := range wasteData {
-		err = sendToHomeAssistant(data)
+		err = sendToHomeAssistant(data, haURL, haToken)
 		if err != nil {
 			log.Printf("Error sending data to Home Assistant: %v", err)
 		}
@@ -79,15 +91,7 @@ func main() {
 }
 
 // Function to send data to Home Assistant
-func sendToHomeAssistant(data WasteData) error {
-	// Fetch Home Assistant URL and Token from environment variables
-	haURL := os.Getenv("HOMEASSISTANT_URL")
-	haToken := os.Getenv("SUPERVISOR_TOKEN")
-
-	if haURL == "" || haToken == "" {
-		return fmt.Errorf("missing Home Assistant URL or token")
-	}
-
+func sendToHomeAssistant(data WasteData, haURL, haToken string) error {
 	payload := map[string]interface{}{
 		"state": "updated",
 		"attributes": map[string]string{
