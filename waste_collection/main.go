@@ -22,8 +22,8 @@ type WasteData struct {
 	NextBIO string `json:"next_bio"`
 }
 
-// Home Assistant Supervisor API URL and Authorization Token
-const haURL = "http://supervisor/core/api/states/sensor.waste_collection" // Supervisor API URL
+// Supervisor API endpoint
+const haURL = "http://supervisor/core/api/states/sensor.waste_collection"
 
 func main() {
 	// Get the Supervisor token from environment variables
