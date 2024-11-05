@@ -12,7 +12,7 @@ This add-on retrieves waste collection dates from the Simbio website for a speci
 
 1. In Home Assistant, go to **Supervisor** > **Add-on Store**.
 2. Click on the **Repositories** menu (three dots in the top-right corner).
-3. Add this repository's URL to the list: `https://github.com/yourusername/your-repo`.
+3. Add this repository's URL to the list: `https://github.com/rozicdejan/ha-go-waste-collection`.
 4. Find the **Waste Collection** add-on in the list and install it.
 5. Start the add-on.
 
