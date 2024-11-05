@@ -144,6 +144,14 @@ func sendToHomeAssistant(data WasteData, haURL, haToken string) error {
 		return fmt.Errorf("error response from Home Assistant: %s - %s", resp.Status, string(bodyBytes))
 	}
 
-	log.Println("Data successfully sent to Home Assistant!")
+	// Log the data sent to Home Assistant
+	log.Printf("Data successfully sent to Home Assistant!")
+	log.Printf("State: updated")
+	log.Printf("Address: %s", data.Name)
+	log.Printf("City: %s", data.City)
+	log.Printf("Next MKO Pickup: %s", data.NextMKO)
+	log.Printf("Next EMB Pickup: %s", data.NextEMB)
+	log.Printf("Next BIO Pickup: %s", data.NextBIO)
+	log.Printf("Friendly Name: Waste Collection")
 	return nil
 }
