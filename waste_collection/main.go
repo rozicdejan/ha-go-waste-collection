@@ -22,14 +22,13 @@ type WasteData struct {
 	NextBIO string `json:"next_bio"`
 }
 
-// Supervisor API endpoint
-const haURL = "http://supervisor/core/api/states/sensor.waste_collection"
-
 func main() {
-	// Get the Supervisor token from environment variables
+	// Get Supervisor token and API URL from environment variables
 	haToken := os.Getenv("SUPERVISOR_TOKEN")
-	if haToken == "" {
-		log.Fatalf("SUPERVISOR_TOKEN is missing. Ensure the add-on is configured correctly.")
+	haURL := os.Getenv("SUPERVISOR_API") + "/states/sensor.waste_collection" // Adding the endpoint to update the sensor state
+
+	if haToken == "" || haURL == "" {
+		log.Fatalf("SUPERVISOR_TOKEN or SUPERVISOR_API is missing. Ensure the add-on is configured correctly.")
 	}
 
 	// Define the Simbio URL
@@ -40,10 +39,10 @@ func main() {
 	data.Set("action", "simbioOdvozOdpadkov")
 	data.Set("query", "začret 69") // Replace with your desired query
 
-	// Create a POST request
+	// Create a POST request to Simbio
 	req, err := http.NewRequest("POST", urlStr, bytes.NewBufferString(data.Encode()))
 	if err != nil {
-		log.Fatalf("Error creating request: %v", err)
+		log.Fatalf("Error creating request to Simbio: %v", err)
 	}
 
 	// Set headers for Simbio request
@@ -80,7 +79,7 @@ func main() {
 
 	// Send each piece of data to Home Assistant
 	for _, data := range wasteData {
-		err = sendToHomeAssistant(data, haToken)
+		err = sendToHomeAssistant(data, haURL, haToken)
 		if err != nil {
 			log.Printf("Error sending data to Home Assistant: %v", err)
 		}
@@ -88,7 +87,7 @@ func main() {
 }
 
 // Function to send data to Home Assistant
-func sendToHomeAssistant(data WasteData, haToken string) error {
+func sendToHomeAssistant(data WasteData, haURL, haToken string) error {
 	payload := map[string]interface{}{
 		"state": "updated",
 		"attributes": map[string]string{
