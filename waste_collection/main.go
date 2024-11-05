@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-// Struct to hold the response data
+// Struct to hold the response data from Simbio
 type WasteData struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`
@@ -23,20 +23,18 @@ type WasteData struct {
 }
 
 func main() {
-
-	fmt.Println("Environment Variables:")
-	for _, e := range os.Environ() {
-		fmt.Println(e)
-	}
-
-	// Retrieve the Supervisor API URL and token from the environment variables
-	haURL := os.Getenv("SUPERVISOR_API") + "/states/sensor.waste_collection"
+	// Retrieve the Supervisor token from the environment variable
 	haToken := os.Getenv("SUPERVISOR_TOKEN")
-
-	// Check if the necessary environment variables are set
-	if haToken == "" || haURL == "/states/sensor.waste_collection" {
-		log.Fatalf("SUPERVISOR_TOKEN or SUPERVISOR_API is missing or empty. Ensure the add-on is configured correctly.")
+	if haToken == "" {
+		log.Fatalf("SUPERVISOR_TOKEN is missing. Ensure the add-on is configured correctly.")
 	}
+
+	// Use the Supervisor API URL directly if it's not set as an environment variable
+	haURL := os.Getenv("SUPERVISOR_API")
+	if haURL == "" {
+		haURL = "http://supervisor/core/api"
+	}
+	haURL = haURL + "/states/sensor.waste_collection"
 
 	log.Println("Starting waste collection data fetch and push to Home Assistant...")
 
@@ -46,7 +44,7 @@ func main() {
 	// Create form data for the POST request to Simbio
 	data := url.Values{}
 	data.Set("action", "simbioOdvozOdpadkov")
-	data.Set("query", "začret 69") // Replace with your desired query
+	data.Set("query", "začret 69") // Replace with the desired query
 
 	// Create a POST request to Simbio
 	req, err := http.NewRequest("POST", urlStr, bytes.NewBufferString(data.Encode()))
