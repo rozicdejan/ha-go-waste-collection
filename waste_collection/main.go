@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 // Struct to hold the response data from Simbio
@@ -23,80 +24,87 @@ type WasteData struct {
 }
 
 func main() {
-	fmt.Println("##### RESTARTING #######")
-	fmt.Println("Environment Variables:")
-	for _, e := range os.Environ() {
-		fmt.Println(e)
-	}
-
-	// Retrieve the Supervisor token from the environment variable
-	haToken := os.Getenv("SUPERVISOR_TOKEN")
-	if haToken == "" {
-		log.Fatalf("SUPERVISOR_TOKEN is missing. Ensure the add-on is configured correctly.")
-	}
-
-	// Use the Supervisor API URL directly if it's not set as an environment variable
-	haURL := os.Getenv("SUPERVISOR_API")
-	if haURL == "" {
-		haURL = "http://supervisor/core/api"
-		fmt.Println("Set haURL to" + haURL)
-	}
-	haURL = haURL + "/states/sensor.waste_collection"
-
-	log.Println("Starting waste collection data fetch and push to Home Assistant...")
-
-	// Define the URL for the waste collection service
-	urlStr := "https://www.simbio.si/sl/moj-dan-odvoza-odpadkov"
-
-	// Create form data for the POST request to Simbio
-	data := url.Values{}
-	data.Set("action", "simbioOdvozOdpadkov")
-	data.Set("query", "začret 69") // Replace with the desired query
-
-	// Create a POST request to Simbio
-	req, err := http.NewRequest("POST", urlStr, bytes.NewBufferString(data.Encode()))
-	if err != nil {
-		log.Fatalf("Error creating request to Simbio: %v", err)
-	}
-
-	// Set headers for Simbio request
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
-	req.Header.Set("X-Requested-With", "XMLHttpRequest")
-
-	// Execute the request
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatalf("Error sending request to Simbio: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check if the response status is OK
-	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Non-OK HTTP status from Simbio: %s", resp.Status)
-	}
-
-	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalf("Error reading response from Simbio: %v", err)
-	}
-
-	// Parse the JSON response from Simbio
-	var wasteData []WasteData
-	err = json.Unmarshal(body, &wasteData)
-	if err != nil {
-		log.Fatalf("Error parsing JSON from Simbio: %v", err)
-	}
-
-	// Send each piece of data to Home Assistant
-	for _, data := range wasteData {
-		err = sendToHomeAssistant(data, haURL, haToken)
-		if err != nil {
-			log.Printf("Error sending data to Home Assistant: %v", err)
+	for {
+		fmt.Println("##### RESTARTING #######")
+		fmt.Println("Environment Variables:")
+		for _, e := range os.Environ() {
+			fmt.Println(e)
 		}
+
+		// Retrieve the Supervisor token from the environment variable
+		haToken := os.Getenv("SUPERVISOR_TOKEN")
+		if haToken == "" {
+			log.Fatalf("SUPERVISOR_TOKEN is missing. Ensure the add-on is configured correctly.")
+		}
+
+		// Use the Supervisor API URL directly if it's not set as an environment variable
+		haURL := os.Getenv("SUPERVISOR_API")
+		if haURL == "" {
+			haURL = "http://supervisor/core/api"
+			fmt.Println("Set haURL to" + haURL)
+		}
+		haURL = haURL + "/states/sensor.waste_collection_ha"
+
+		log.Println("Starting waste collection data fetch and push to Home Assistant...")
+
+		// Define the URL for the waste collection service
+		urlStr := "https://www.simbio.si/sl/moj-dan-odvoza-odpadkov"
+
+		// Create form data for the POST request to Simbio
+		data := url.Values{}
+		data.Set("action", "simbioOdvozOdpadkov")
+		data.Set("query", "začret 69") // Replace with the desired query
+
+		// Create a POST request to Simbio
+		req, err := http.NewRequest("POST", urlStr, bytes.NewBufferString(data.Encode()))
+		if err != nil {
+			log.Fatalf("Error creating request to Simbio: %v", err)
+		}
+
+		// Set headers for Simbio request
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
+		req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
+		req.Header.Set("X-Requested-With", "XMLHttpRequest")
+
+		// Execute the request
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Fatalf("Error sending request to Simbio: %v", err)
+		}
+		defer resp.Body.Close()
+
+		// Check if the response status is OK
+		if resp.StatusCode != http.StatusOK {
+			log.Fatalf("Non-OK HTTP status from Simbio: %s", resp.Status)
+		}
+
+		// Read the response body
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatalf("Error reading response from Simbio: %v", err)
+		}
+
+		// Parse the JSON response from Simbio
+		var wasteData []WasteData
+		err = json.Unmarshal(body, &wasteData)
+		if err != nil {
+			log.Fatalf("Error parsing JSON from Simbio: %v", err)
+		}
+
+		// Send each piece of data to Home Assistant
+		for _, data := range wasteData {
+			err = sendToHomeAssistant(data, haURL, haToken)
+			if err != nil {
+				log.Printf("Error sending data to Home Assistant: %v", err)
+			}
+		}
+
+		// Wait for an hour before running the next scrape
+		fmt.Println("Sleeping for 1 hour...")
+		time.Sleep(3600 * time.Second)
+
 	}
 }
 
