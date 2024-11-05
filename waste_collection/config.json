@@ -1,12 +1,13 @@
 {
   "name": "Waste Collection",
-  "version": "1.21",
+  "version": "1.22",
   "slug": "waste_collection",
   "description": "A Home Assistant add-on for waste collection notifications",
   "startup": "application",
   "boot": "auto",
   "host_network": true,
   "hassio_api": true,
+  "homeassistant_api": true,
   "hassio_role": "default",
   "arch": [
     "aarch64",
