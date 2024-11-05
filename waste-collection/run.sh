@@ -1,11 +1,11 @@
-#!/bin/bash
+FROM golang:1.18-alpine
 
-# Start waste collection service
-echo "Starting Waste Collection Add-on..."
+WORKDIR /app
 
-# Run the Go script in a loop to update data every 15 minutes
-while true; do
-    ./waste-collection
-    echo "Data updated. Sleeping for 15 minutes."
-    sleep 900 # 900 seconds = 15 minutes
-done
+COPY go.mod ./
+COPY main.go ./
+COPY run.sh ./
+
+RUN go build -o waste-collection main.go
+
+CMD ["./run.sh"]
