@@ -52,7 +52,7 @@ entities:
 
 
 ```
-[ha-wast-collection-](https://github.com/rozicdejan/ha-go-waste-collection/blob/main/pictures/ha-waste-collection-schedule-entities.png?raw=true)
+[ha-wast-collection-enteties](https://github.com/rozicdejan/ha-go-waste-collection/blob/main/pictures/ha-waste-collection-schedule-entities.png?raw=true)
 
 
 ### 2. Picture-Elements Card (Visual Display with Icons)
