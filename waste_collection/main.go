@@ -23,6 +23,7 @@ type WasteData struct {
 }
 
 func main() {
+	fmt.Println("##### RESTARTING #######")
 	fmt.Println("Environment Variables:")
 	for _, e := range os.Environ() {
 		fmt.Println(e)
