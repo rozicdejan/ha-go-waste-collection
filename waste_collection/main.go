@@ -23,6 +23,11 @@ type WasteData struct {
 }
 
 func main() {
+	fmt.Println("Environment Variables:")
+	for _, e := range os.Environ() {
+		fmt.Println(e)
+	}
+
 	// Retrieve the Supervisor token from the environment variable
 	haToken := os.Getenv("SUPERVISOR_TOKEN")
 	if haToken == "" {
