@@ -122,5 +122,9 @@ layout_options:
 
 Note: Ensure that the images (Mesani.svg, Embalaza.svg, Bioloski_odpadki.svg) are saved in the /local/ directory in Home Assistant’s file structure.
 
+![ha-wast-collection](https://github.com/rozicdejan/ha-go-waste-collection/blob/main/pictures/ha-waste-collection-schedule.png?raw=true)
+
+
+
 ## Troubleshooting
 If you encounter issues, check the add-on logs for any errors.
