@@ -24,25 +24,27 @@ Edit the add-on configuration with your address query. For example:
 address: "ZAČRET 69"
 ```
 ## Displaying in Home Assistant Dashboard
-Use the following YAML to display the waste collection data as sensors:
+Use the following entities configuration. Add card > Entities card and paste the code:
 ```yaml
-sensor:
-  - platform: rest
-    resource: http://your_addon_ip:8123/waste
-    name: Waste Collection
-    scan_interval: 86400
-    json_attributes:
-      - next_mko
-      - next_emb
-      - next_bio
-  - platform: template
-    sensors:
-      next_mko:
-        value_template: "{{ state_attr('sensor.waste_collection', 'next_mko') }}"
-      next_emb:
-        value_template: "{{ state_attr('sensor.waste_collection', 'next_emb') }}"
-      next_bio:
-        value_template: "{{ state_attr('sensor.waste_collection', 'next_bio') }}"
+type: entities
+title: Waste Collection Schedule
+entities:
+  - entity: sensor.waste_collection_ha
+    name: Next Mixed Waste (MKO) Pickup
+    icon: mdi:trash-can
+    type: attribute
+    attribute: next_mko
+  - entity: sensor.waste_collection_ha
+    name: Next Packaging Waste (EMB) Pickup
+    icon: mdi:recycle
+    type: attribute
+    attribute: next_emb
+  - entity: sensor.waste_collection_ha
+    name: Next Bio Waste (BIO) Pickup
+    icon: mdi:leaf
+    type: attribute
+    attribute: next_bio
+
 
 ```
 ## Troubleshooting
