@@ -1,6 +1,6 @@
 {
   "name": "Waste Collection",
-  "version": "1.26",
+  "version": "1.27",
   "slug": "waste_collection",
   "description": "A Home Assistant add-on for waste collection notifications",
   "startup": "application",
